@@ -1015,6 +1015,10 @@ public abstract class PlatformThreads {
         @Override
         protected void operate() {
             for (IsolateThread cur = VMThreads.firstThread(); cur.isNonNull(); cur = VMThreads.nextThread(cur)) {
+                if (VMThreads.SafepointBehavior.isCrashedThread(cur)) {
+                    /* The Java frame anchors or the values on the stack may be corrupt. */
+                    continue;
+                }
                 result.add(PlatformThreads.fromVMThread(cur));
             }
         }
