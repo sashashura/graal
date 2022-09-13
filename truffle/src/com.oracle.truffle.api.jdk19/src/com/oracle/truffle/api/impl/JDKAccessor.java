@@ -57,7 +57,7 @@ public abstract class JDKAccessor {
          * We try to link only once, to avoid repeated linkage errors if loom is not supported.
          */
         try {
-            Lazy.ensureInitilized();
+            Lazy.ensureInitialized();
             enabled = true;
         } catch (LinkageError e) {
             enabled = false;
@@ -78,7 +78,7 @@ public abstract class JDKAccessor {
      */
     static final class Lazy {
 
-        static void ensureInitilized() {
+        static void ensureInitialized() {
             /*
              * Method is intended to be invoked to make sure the enclosing class is initialized.
              */
