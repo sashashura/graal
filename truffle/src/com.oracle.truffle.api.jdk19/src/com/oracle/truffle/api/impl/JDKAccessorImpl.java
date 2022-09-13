@@ -40,34 +40,23 @@
  */
 package com.oracle.truffle.api.impl;
 
-import java.util.Objects;
+/*
+ * Deferring this to an extra class allows us to detect whether preview features are enabled. If
+ * preview features are disabled then the Lazy class will not link correctly as it uses preview
+ * API. Regular ways of detecting whether preview is enabled e.g. using the
+ * jdk.internal.misc.PreviewFeatures are not always available to the JDKAccessor class.
+ */
+final class JDKAccessorImpl {
 
-public abstract class JDKAccessor {
-
-    private JDKAccessor() {
+    static void ensureInitialized() {
         /*
-         * No instances.
+         * Method is intended to be invoked to make sure the enclosing class is initialized.
          */
     }
 
-    private static final boolean previewEnabled;
-    static {
-        boolean enabled;
-        /*
-         * We try to link only once, to avoid repeated linkage errors if loom is not supported.
-         */
-        try {
-            JDKAccessorImpl.ensureInitialized();
-            enabled = true;
-        } catch (LinkageError e) {
-            enabled = false;
-        }
-        previewEnabled = enabled;
-    }
-
-    public static boolean isVirtualThread(@SuppressWarnings("unused") Thread t) {
-        Objects.requireNonNull(t);
-        return previewEnabled && JDKAccessorImpl.isVirtualThread(t);
+    @SuppressWarnings("preview")
+    static boolean isVirtualThread(Thread t) {
+        return t.isVirtual();
     }
 
 }
