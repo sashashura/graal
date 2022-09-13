@@ -50,10 +50,45 @@ public abstract class JDKAccessor {
          */
     }
 
-    @SuppressWarnings("preview")
+    private static final boolean previewEnabled;
+    static {
+        boolean enabled;
+        /*
+         * We try to link only once, to avoid repeated linkage errors if loom is not supported.
+         */
+        try {
+            Lazy.ensureInitilized();
+            enabled = true;
+        } catch (LinkageError e) {
+            enabled = false;
+        }
+        previewEnabled = enabled;
+    }
+
     public static boolean isVirtualThread(@SuppressWarnings("unused") Thread t) {
         Objects.requireNonNull(t);
-        return t.isVirtual();
+        return previewEnabled && Lazy.isVirtualThread(t);
+    }
+
+    /*
+     * Deferring this to an extra class allows us to detect whether preview features are enabled. If
+     * preview features are disabled then the Lazy class will not link correctly as it uses preview
+     * API. Regular ways of detecting whether preview is enabled e.g. using the
+     * jdk.internal.misc.PreviewFeatures are not always available to the JDKAccessor class.
+     */
+    static final class Lazy {
+
+        static void ensureInitilized() {
+            /*
+             * Method is intended to be invoked to make sure the enclosing class is initialized.
+             */
+        }
+
+        @SuppressWarnings("preview")
+        static boolean isVirtualThread(Thread t) {
+            return t.isVirtual();
+        }
+
     }
 
 }
