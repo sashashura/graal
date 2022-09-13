@@ -24,29 +24,15 @@
  */
 package org.graalvm.compiler.truffle.test;
 
-import static org.junit.Assert.assertTrue;
+public class LoomUtils {
 
-import org.graalvm.polyglot.Context;
-import org.junit.Assert;
-import org.junit.Test;
-
-public class OptimizedLoomTest {
+    public static boolean isLoomAvailable() {
+        return true;
+    }
 
     @SuppressWarnings("preview")
-    @Test
-    public void test() throws InterruptedException {
-        Thread t = Thread.startVirtualThread(() -> {
-            try (Context c = Context.create()) {
-                c.eval("sl", "function main() {}");
-            } catch (IllegalStateException e) {
-                assertTrue(e.getMessage().equals("Using polyglot contexts on Java virtual threads is currently not supported with an optimizing Truffle runtime. " +
-                                "As a workaround you may add the -Dtruffle.TruffleRuntime=com.oracle.truffle.api.impl.DefaultTruffleRuntime JVM argument to switch to a non-optimizing runtime when using virtual threads. " +
-                                "Please note that performance is severly reduced in this mode. Loom support for optimizing runtimes will be added in a future release."));
-                return;
-            }
-            Assert.fail("Loom should not be supported yet.");
-        });
-        t.join();
+    public static Thread startVirtualThread(@SuppressWarnings("unused") Runnable task) {
+        return Thread.startVirtualThread(task);
     }
 
 }

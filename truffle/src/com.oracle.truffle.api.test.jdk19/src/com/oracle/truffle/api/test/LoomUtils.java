@@ -40,27 +40,15 @@
  */
 package com.oracle.truffle.api.test;
 
-import org.graalvm.polyglot.Context;
-import org.junit.Assume;
-import org.junit.Test;
+public class LoomUtils {
 
-import com.oracle.truffle.api.Truffle;
-import com.oracle.truffle.api.impl.DefaultTruffleRuntime;
-
-public class DefaultLoomTest {
+    public static boolean isLoomAvailable() {
+        return true;
+    }
 
     @SuppressWarnings("preview")
-    @Test
-    public void test() throws InterruptedException {
-        // see OptimizedLoomTest for other runtimes
-        Assume.assumeTrue(Truffle.getRuntime() instanceof DefaultTruffleRuntime);
-
-        Thread t = Thread.startVirtualThread(() -> {
-            try (Context c = Context.create()) {
-                c.eval("sl", "function main() {}");
-            }
-        });
-        t.join();
+    public static Thread startVirtualThread(@SuppressWarnings("unused") Runnable task) {
+        return Thread.startVirtualThread(task);
     }
 
 }
